@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pure Bottle — Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --g1:#0a1f12;--g2:#112b1a;--g3:#1a4a2e;--g4:#2d6e4a;--g5:#4a9e6e;
+  --gold:#c9a84c;--gold2:#e8c96a;--cream:#f5f0e8;--beige:#ede5d4;
+  --paper:#faf7f2;--ink:#1a1a14;--muted:#7a7a6a;--white:#ffffff;
+  --red:#c0392b;--red-bg:#fff0ee;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5;}
+
+/* HERO */
+.hero{background:var(--g1);position:relative;overflow:hidden;padding:0;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;}
+.hero-bg-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);font-family:'Cormorant Garamond',serif;font-size:clamp(100px,30vw,260px);font-weight:700;color:rgba(255,255,255,0.025);letter-spacing:-8px;white-space:nowrap;pointer-events:none;user-select:none;line-height:1;}
+.hero-lines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,0.018) 39px,rgba(255,255,255,0.018) 40px);pointer-events:none;}
+.hero-content{position:relative;z-index:2;padding:48px 28px 52px;animation:fadeUp 0.9s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.logo-mark{display:flex;align-items:center;gap:14px;margin-bottom:40px;}
+.logo-sq{width:52px;height:52px;border:1.5px solid var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;}
+.logo-sq::before{content:'';position:absolute;inset:4px;border:1px solid rgba(201,168,76,0.3);border-radius:6px;}
+.logo-sq span{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:1px;}
+.logo-text-wrap{line-height:1.1;}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--cream);letter-spacing:4px;text-transform:uppercase;}
+.logo-tagline{font-size:10px;color:var(--g5);letter-spacing:3px;text-transform:uppercase;}
+.hero-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,15vw,88px);font-weight:300;color:var(--cream);line-height:0.95;letter-spacing:-1px;margin-bottom:6px;}
+.hero-headline em{font-style:italic;color:var(--gold);}
+.hero-sub{font-size:13px;color:var(--g5);letter-spacing:3px;text-transform:uppercase;margin-bottom:32px;font-weight:300;}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--g1);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:14px 28px;border-radius:100px;text-decoration:none;transition:all 0.3s;}
+.hero-cta:hover{background:var(--gold2);transform:translateY(-2px);}
+.hero-cta svg{width:14px;height:14px;fill:var(--g1);}
+
+.ticker{background:var(--gold);padding:10px 0;overflow:hidden;white-space:nowrap;position:relative;z-index:3;}
+.ticker-inner{display:inline-block;animation:tick 22s linear infinite;font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:3px;color:var(--g1);}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+.form-wrap{max-width:640px;margin:0 auto;padding:48px 20px 100px;}
+.step{margin-bottom:12px;opacity:0;transform:translateY(20px);animation:fadeUp 0.6s ease forwards;}
+.step:nth-child(1){animation-delay:0.05s;}.step:nth-child(2){animation-delay:0.1s;}.step:nth-child(3){animation-delay:0.15s;}.step:nth-child(4){animation-delay:0.2s;}.step:nth-child(5){animation-delay:0.25s;}.step:nth-child(6){animation-delay:0.3s;}
+.step-card{background:var(--white);border-radius:20px;overflow:hidden;border:1px solid rgba(26,74,46,0.1);transition:box-shadow 0.3s;}
+.step-card:focus-within{box-shadow:0 4px 32px rgba(26,74,46,0.12);}
+.step-head{display:flex;align-items:center;gap:16px;padding:20px 24px 18px;border-bottom:1px solid rgba(26,74,46,0.07);}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--g1);letter-spacing:0.5px;}
+.step-desc{font-size:12px;color:var(--muted);margin-top:1px;font-weight:300;}
+.step-body{padding:20px 24px 24px;}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.field-row{grid-template-columns:1fr;}}
+.field{margin-bottom:14px;}.field:last-child{margin-bottom:0;}
+.field label{display:block;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--g4);margin-bottom:6px;}
+.field input[type="text"],.field textarea{width:100%;background:var(--paper);border:1.5px solid var(--beige);border-radius:12px;padding:12px 16px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border 0.2s,box-shadow 0.2s;resize:none;}
+.field input[type="text"]:focus,.field textarea:focus{border-color:var(--g3);box-shadow:0 0 0 3px rgba(26,74,46,0.08);background:var(--white);}
+
+/* JUICE */
+.item-grid{display:flex;flex-direction:column;gap:10px;}
+.item-card{position:relative;}
+.item-card input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;}
+.item-label{display:flex;align-items:center;gap:14px;background:var(--paper);border:1.5px solid var(--beige);border-radius:14px;padding:14px 16px;cursor:pointer;transition:all 0.2s;user-select:none;}
+.item-card input:checked + .item-label{border-color:var(--g3);background:#eef7ee;}
+.item-emoji{width:42px;height:42px;background:var(--white);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--beige);transition:border 0.2s;}
+.item-card input:checked + .item-label .item-emoji{border-color:var(--g4);background:#d4edda;}
+.item-info{flex:1;}
+.item-name{font-weight:600;font-size:14px;color:var(--g1);}
+.item-sub{font-size:12px;color:var(--muted);margin-top:2px;font-weight:300;}
+.item-price{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;color:var(--g3);white-space:nowrap;padding-right:6px;}
+.item-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--beige);background:var(--white);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.item-card input:checked + .item-label .item-check{background:var(--g3);border-color:var(--g3);}
+.item-check::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--white);opacity:0;transition:opacity 0.2s;}
+.item-card input:checked + .item-label .item-check::after{opacity:1;}
+
+.qty-row{display:none;align-items:center;justify-content:space-between;background:var(--g1);border-radius:12px;padding:10px 16px;margin-top:6px;animation:fadeUp 0.2s ease both;}
+.qty-row.on{display:flex;}
+.qty-label-text{font-size:13px;color:var(--cream);font-weight:400;}
+.qty-ctrl{display:flex;align-items:center;gap:12px;}
+.qbtn{width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,0.1);color:var(--cream);font-size:20px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;line-height:1;}
+.qbtn:hover{background:rgba(255,255,255,0.2);}
+.qnum{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);min-width:28px;text-align:center;}
+.expand-box{display:none;margin-top:8px;animation:fadeUp 0.2s ease both;}
+.expand-box.on{display:block;}
+.expand-box textarea{width:100%;background:var(--paper);border:1.5px solid var(--beige);border-radius:12px;padding:12px 16px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none;resize:none;transition:border 0.2s;}
+.expand-box textarea:focus{border-color:var(--g3);}
+
+/* CHICKEN SAUCE CARDS */
+.sauce-list{display:flex;flex-direction:column;gap:12px;}
+.sauce-card{background:var(--paper);border:1.5px solid var(--beige);border-radius:16px;overflow:hidden;transition:all 0.2s;}
+.sauce-card.selected{border-color:var(--g3);background:var(--white);box-shadow:0 2px 16px rgba(26,74,46,0.08);}
+.sauce-top{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;user-select:none;}
+.sauce-icon{width:44px;height:44px;border-radius:12px;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--beige);flex-shrink:0;transition:all 0.2s;}
+.sauce-card.selected .sauce-icon{background:#d4edda;border-color:var(--g4);}
+.sauce-info{flex:1;}
+.sauce-name{font-weight:600;font-size:14px;color:var(--g1);}
+.sauce-desc{font-size:11px;color:var(--muted);margin-top:2px;font-weight:300;}
+.sauce-chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--beige);background:var(--white);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:12px;color:transparent;}
+.sauce-card.selected .sauce-chk{background:var(--g3);border-color:var(--g3);color:var(--white);}
+
+/* Options panel */
+.sauce-options{display:none;padding:0 16px 18px;border-top:1px solid rgba(26,74,46,0.07);margin-top:0;}
+.sauce-card.selected .sauce-options{display:block;padding-top:16px;}
+.opt-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--g4);margin-bottom:8px;margin-top:14px;}
+.opt-label:first-child{margin-top:0;}
+
+/* Heat toggle */
+.heat-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.heat-btn{padding:11px;border-radius:10px;border:1.5px solid var(--beige);background:var(--white);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s;text-align:center;color:var(--muted);}
+.heat-btn.orig.active{border-color:var(--g3);background:#eef7ee;color:var(--g3);font-weight:600;}
+.heat-btn.spicy.active{border-color:var(--red);background:var(--red-bg);color:var(--red);font-weight:600;}
+
+/* Weight selector */
+.weight-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wt-btn{padding:14px 8px;border-radius:12px;border:1.5px solid var(--beige);background:var(--white);font-family:'Outfit',sans-serif;cursor:pointer;transition:all 0.18s;text-align:center;}
+.wt-btn .wt-size{display:block;font-size:13px;font-weight:600;color:var(--ink);}
+.wt-btn .wt-price{display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--g3);margin-top:3px;}
+.wt-btn.active{border-color:var(--g3);background:#eef7ee;}
+.wt-btn.active .wt-size{color:var(--g2);}
+
+/* Location */
+.loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:400px){.loc-grid{grid-template-columns:1fr;}}
+.loc-tile{position:relative;}
+.loc-tile input[type="radio"]{position:absolute;opacity:0;width:0;height:0;}
+.loc-lbl{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--paper);border:1.5px solid var(--beige);border-radius:12px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink);transition:all 0.2s;}
+.loc-tile input:checked + .loc-lbl{border-color:var(--g3);background:#eef7ee;color:var(--g2);}
+.loc-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--beige);flex-shrink:0;transition:all 0.2s;}
+.loc-tile input:checked + .loc-lbl .loc-dot{background:var(--g3);border-color:var(--g3);}
+.loc-name{flex:1;font-size:12px;}
+.loc-fee{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700;color:var(--g3);white-space:nowrap;margin-left:auto;}
+.loc-tile input:checked + .loc-lbl .loc-fee{color:var(--g2);}
+.loc-detail{display:none;margin-top:10px;animation:fadeUp 0.2s ease both;}
+.loc-detail.on{display:block;}
+.loc-detail input[type="text"]{width:100%;background:var(--paper);border:1.5px solid var(--beige);border-radius:12px;padding:12px 16px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border 0.2s;}
+.loc-detail input[type="text"]:focus{border-color:var(--g3);}
+
+/* Summary */
+.summary-card{background:var(--g1);border-radius:20px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.summary-card::before{content:'PB.';position:absolute;right:-10px;bottom:-20px;font-family:'Cormorant Garamond',serif;font-size:120px;font-weight:700;color:rgba(255,255,255,0.03);pointer-events:none;line-height:1;}
+.sum-label{font-size:10px;letter-spacing:3px;color:var(--g5);text-transform:uppercase;margin-bottom:4px;}
+.sum-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:18px;}
+.sum-lines{font-size:14px;line-height:1.9;min-height:32px;}
+.sum-item{display:block;color:var(--cream);}
+.sum-sub{display:block;padding-left:14px;font-size:12px;color:#7aaa7a;}
+.sum-loc{display:block;margin-top:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);color:#a8c8a8;font-size:13px;}
+.sum-total{display:block;margin-top:12px;padding-top:12px;border-top:1px solid rgba(201,168,76,0.35);font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);font-weight:700;}
+.sum-empty{color:rgba(255,255,255,0.25);font-style:italic;font-size:13px;}
+
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;padding:19px 24px;background:#25d366;border:none;border-radius:100px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--white);cursor:pointer;text-decoration:none;transition:all 0.25s;}
+.wa-btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(37,211,102,0.4);}
+.wa-btn:active{transform:translateY(0);}
+.wa-btn svg{width:22px;height:22px;fill:white;flex-shrink:0;}
+.foot-note{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;line-height:1.7;font-weight:300;}
+.foot-note strong{color:var(--g4);font-weight:500;}
+
+/* REVIEWS SECTION */
+.reviews-section{background:var(--g1);padding:52px 20px 56px;position:relative;overflow:hidden;}
+.reviews-section::before{content:'❝';position:absolute;top:-10px;left:20px;font-size:160px;color:rgba(201,168,76,0.06);font-family:'Cormorant Garamond',serif;line-height:1;pointer-events:none;}
+.reviews-header{text-align:center;margin-bottom:36px;}
+.reviews-eyebrow{font-size:10px;letter-spacing:4px;color:var(--g5);text-transform:uppercase;margin-bottom:8px;font-weight:400;}
+.reviews-title{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,8vw,48px);font-weight:300;color:var(--cream);line-height:1.1;}
+.reviews-title em{font-style:italic;color:var(--gold);}
+.reviews-stars-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;}
+.reviews-avg{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);}
+.reviews-count{font-size:12px;color:var(--g5);}
+.stars{color:var(--gold);font-size:15px;letter-spacing:1px;}
+.reviews-grid{display:flex;flex-direction:column;gap:14px;max-width:600px;margin:0 auto;}
+.review-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:18px;padding:22px 20px;transition:border-color 0.2s;}
+.review-card:hover{border-color:rgba(201,168,76,0.35);}
+.review-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.review-avatar{width:38px;height:38px;border-radius:50%;background:var(--g3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;border:1px solid rgba(201,168,76,0.2);}
+.review-meta{flex:1;padding-left:12px;}
+.review-name{font-size:13px;font-weight:600;color:var(--cream);letter-spacing:0.3px;}
+.review-tag{font-size:10px;color:var(--g5);margin-top:2px;letter-spacing:0.5px;}
+.review-badge{font-size:10px;background:rgba(201,168,76,0.12);color:var(--gold);padding:3px 9px;border-radius:100px;border:1px solid rgba(201,168,76,0.2);white-space:nowrap;align-self:flex-start;}
+.review-text{font-size:14px;color:rgba(245,240,232,0.8);line-height:1.65;font-weight:300;}
+.review-text strong{color:var(--gold);font-weight:500;}
+.review-footer{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05);}
+.review-stars{font-size:12px;color:var(--gold);}
+.review-item-tag{font-size:11px;color:var(--g5);background:rgba(74,158,110,0.1);padding:2px 8px;border-radius:100px;margin-left:auto;}
+.reviews-note{font-size:12px;color:var(--g5);margin-top:20px;text-align:center;font-weight:300;letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-lines"></div>
+  <div class="hero-bg-text">PB.</div>
+  <div class="hero-content">
+    <div class="logo-mark">
+      <div class="logo-sq"><span>PB.</span></div>
+      <div class="logo-text-wrap">
+        <div class="logo-name">Pure Bottle</div>
+        <div class="logo-tagline">Healthy Life</div>
+      </div>
+    </div>
+    <div class="hero-headline">Order<br/><em>Fresh.</em></div>
+    <div class="hero-sub">Eat Clean. Stay Pure. Live Better.</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <a class="hero-cta" href="#order">
+        Start Order
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+      <button onclick="toggleReviews()" id="rev-btn" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid rgba(201,168,76,0.5);color:var(--gold);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;padding:14px 22px;border-radius:100px;cursor:pointer;transition:all 0.3s;">
+        &#9733; Reviews
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS SECTION -->
+<section class="reviews-section" id="reviews-section" style="display:none;">
+  <div class="reviews-header">
+    <div class="reviews-eyebrow">Real customers &middot; Real results</div>
+    <div class="reviews-title">What People Are<br/><em>Saying</em></div>
+    <div class="reviews-stars-row">
+      <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="reviews-avg">5.0</span>
+      <span class="reviews-count">&middot; Verified orders</span>
+    </div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">&#x1F9D1;</div>
+        <div class="review-meta">
+          <div class="review-name">Ahmad R.</div>
+          <div class="review-tag">UTM &middot; Repeat customer</div>
+        </div>
+        <div class="review-badge">&#10003; Verified</div>
+      </div>
+      <div class="review-text">The food was <strong>amazing</strong> &mdash; loads of meat, portions were generous. The juice was <strong>freshly made</strong>, not synthetic at all. One of the best healthy meals I've had.</div>
+      <div class="review-footer">
+        <span class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span class="review-item-tag">&#x1F357; Chicken + &#x1F34A; OJ</span>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">&#x1F469;</div>
+        <div class="review-meta">
+          <div class="review-name">Sarah M.</div>
+          <div class="review-tag">Garden Residence &middot; Student</div>
+        </div>
+        <div class="review-badge">&#10003; Verified</div>
+      </div>
+      <div class="review-text">I've been dieting and always short on time &mdash; especially during exams and 8am classes. <strong>Pure Plate solved that for me.</strong> Amazing taste, fabulous packaging, saves time, great price. I recommend this all the time.</div>
+      <div class="review-footer">
+        <span class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span class="review-item-tag">&#x1F957; Meal Plan</span>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">&#x1F4AA;</div>
+        <div class="review-meta">
+          <div class="review-name">Khalid A.</div>
+          <div class="review-tag">Gym-goer &middot; Skudai</div>
+        </div>
+        <div class="review-badge">&#10003; Verified</div>
+      </div>
+      <div class="review-text">Even the packaging makes you want to open the box right away. The fresh orange juice is on another level &mdash; nothing compares. Fits perfectly for gym players or anyone wanting to be healthy. <strong>"To be pure &mdash; order from Pure Plate."</strong></div>
+      <div class="review-footer">
+        <span class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span class="review-item-tag">&#x1F357; Chicken + &#x1F379; Juice</span>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">&#x1F9D1;</div>
+        <div class="review-meta">
+          <div class="review-name">Faris N.</div>
+          <div class="review-tag">UTM &middot; Corporate order</div>
+        </div>
+        <div class="review-badge">&#10003; Verified</div>
+      </div>
+      <div class="review-text">Food was <strong>delicious, meat was tender</strong>, and everything was <strong>clean and well packaged</strong>. Order arrived smoothly. We'll definitely be ordering again.</div>
+      <div class="review-footer">
+        <span class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span class="review-item-tag">&#x1F357; Bulk Order</span>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-avatar">&#11088;</div>
+        <div class="review-meta">
+          <div class="review-name">Verified Customer</div>
+          <div class="review-tag">WhatsApp review</div>
+        </div>
+        <div class="review-badge">&#10003; Verified</div>
+      </div>
+      <div class="review-text"><strong>Excellently cooked</strong>, very filling at an <strong>affordable price</strong>. The chicken with pure plate sauce hits different &mdash; even better than BBQ sauce.</div>
+      <div class="review-footer">
+        <span class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span class="review-item-tag">&#x1F357; Chicken</span>
+      </div>
+    </div>
+  </div>
+  <p class="reviews-note">Your trust is our motivation &mdash; thank you for being part of our journey &#x1F33F;</p>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    PURE BOTTLE &nbsp;·&nbsp; HEALTHY LIFE &nbsp;·&nbsp; NO PRESERVATIVES &nbsp;·&nbsp; HIGH PROTEIN &nbsp;·&nbsp; FRESH DAILY &nbsp;·&nbsp; CLEAN EATING &nbsp;·&nbsp; NO JUNK &nbsp;·&nbsp; NO ADDED SUGAR &nbsp;·&nbsp;
+    PURE BOTTLE &nbsp;·&nbsp; HEALTHY LIFE &nbsp;·&nbsp; NO PRESERVATIVES &nbsp;·&nbsp; HIGH PROTEIN &nbsp;·&nbsp; FRESH DAILY &nbsp;·&nbsp; CLEAN EATING &nbsp;·&nbsp; NO JUNK &nbsp;·&nbsp; NO ADDED SUGAR &nbsp;·&nbsp;
+  </div>
+</div>
+
+<div class="form-wrap" id="order">
+
+  <!-- 1. INFO -->
+  <div class="step">
+    <div class="step-card">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <div><div class="step-title">Your Details</div><div class="step-desc">Who's placing this order?</div></div>
+      </div>
+      <div class="step-body">
+        <div class="field"><label for="cname">Full Name</label><input type="text" id="cname" placeholder="e.g. Ahmad"/></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. JUICES -->
+  <div class="step">
+    <div class="step-card">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <div><div class="step-title">Fresh Juices</div><div class="step-desc">Pure Bottle Signature Blend · No added sugar · RM 8 each</div></div>
+      </div>
+      <div class="step-body">
+        <div class="item-grid">
+
+          <div class="item-card">
+            <input type="checkbox" id="j1" onchange="toggleQty(this,'qj1')"/>
+            <label class="item-label" for="j1">
+              <div class="item-emoji">🍊</div>
+              <div class="item-info"><div class="item-name">Orange Juice</div><div class="item-sub">Cold-pressed pure orange</div></div>
+              <div class="item-price">RM 8</div><div class="item-check"></div>
+            </label>
+          </div>
+          <div class="qty-row" id="qj1">
+            <span class="qty-label-text">🍊 Orange Juice</span>
+            <div class="qty-ctrl"><button class="qbtn" onclick="chQty('nj1',-1)">−</button><span class="qnum" id="nj1">1</span><button class="qbtn" onclick="chQty('nj1',1)">+</button></div>
+          </div>
+
+          <div class="item-card">
+            <input type="checkbox" id="j2" onchange="toggleQty(this,'qj2')"/>
+            <label class="item-label" for="j2">
+              <div class="item-emoji">🍏</div>
+              <div class="item-info"><div class="item-name">Apple Juice</div><div class="item-sub">Crisp fresh apple blend</div></div>
+              <div class="item-price">RM 8</div><div class="item-check"></div>
+            </label>
+          </div>
+          <div class="qty-row" id="qj2">
+            <span class="qty-label-text">🍏 Apple Juice</span>
+            <div class="qty-ctrl"><button class="qbtn" onclick="chQty('nj2',-1)">−</button><span class="qnum" id="nj2">1</span><button class="qbtn" onclick="chQty('nj2',1)">+</button></div>
+          </div>
+
+          <div class="item-card">
+            <input type="checkbox" id="j3" onchange="toggleQty(this,'qj3')"/>
+            <label class="item-label" for="j3">
+              <div class="item-emoji">🍹</div>
+              <div class="item-info"><div class="item-name">Mix Juice</div><div class="item-sub">Orange + Apple combo</div></div>
+              <div class="item-price">RM 8</div><div class="item-check"></div>
+            </label>
+          </div>
+          <div class="qty-row" id="qj3">
+            <span class="qty-label-text">🍹 Mix Juice</span>
+            <div class="qty-ctrl"><button class="qbtn" onclick="chQty('nj3',-1)">−</button><span class="qnum" id="nj3">1</span><button class="qbtn" onclick="chQty('nj3',1)">+</button></div>
+          </div>
+
+          <div class="item-card">
+            <input type="checkbox" id="j4" onchange="toggleQty(this,'qj4');toggleExp(this,'expj4')"/>
+            <label class="item-label" for="j4">
+              <div class="item-emoji">✏️</div>
+              <div class="item-info"><div class="item-name">Custom Blend</div><div class="item-sub">Tell us your mix</div></div>
+              <div class="item-price">RM 8</div><div class="item-check"></div>
+            </label>
+          </div>
+          <div class="qty-row" id="qj4">
+            <span class="qty-label-text">✏️ Custom Blend</span>
+            <div class="qty-ctrl"><button class="qbtn" onclick="chQty('nj4',-1)">−</button><span class="qnum" id="nj4">1</span><button class="qbtn" onclick="chQty('nj4',1)">+</button></div>
+          </div>
+          <div class="expand-box" id="expj4">
+            <textarea id="txtj4" rows="2" placeholder="Describe your custom juice blend (e.g. mango + lime + ginger)..."></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CHICKEN -->
+  <div class="step">
+    <div class="step-card">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Protein Chicken Bites</div>
+          <div class="step-desc">Tap a sauce → choose heat level → pick your portion size</div>
+        </div>
+      </div>
+      <div class="step-body">
+        <div class="sauce-list">
+
+          <div class="sauce-card" id="sc1">
+            <div class="sauce-top" onclick="toggleSauce('sc1','s1')">
+              <div class="sauce-icon">🍯</div>
+              <div class="sauce-info"><div class="sauce-name">Honey Mustard Vinaigrette</div><div class="sauce-desc">Sweet, tangy &amp; golden</div></div>
+              <div class="sauce-chk">✓</div>
+            </div>
+            <div class="sauce-options">
+              <div class="opt-label">Heat Level</div>
+              <div class="heat-toggle">
+                <button class="heat-btn orig active" onclick="setHeat('s1','Original',this);event.stopPropagation()">🥗 Original</button>
+                <button class="heat-btn spicy" onclick="setHeat('s1','Spicy',this);event.stopPropagation()">🌶️ Spicy</button>
+              </div>
+              <div class="opt-label">Portion &amp; Price</div>
+              <div class="weight-grid">
+                <button class="wt-btn" onclick="setWeight('s1','250g',7,this);event.stopPropagation()"><span class="wt-size">250g</span><span class="wt-price">RM 7</span></button>
+                <button class="wt-btn" onclick="setWeight('s1','500g',12,this);event.stopPropagation()"><span class="wt-size">500g</span><span class="wt-price">RM 12</span></button>
+                <button class="wt-btn" onclick="setWeight('s1','1 Kilo',20,this);event.stopPropagation()"><span class="wt-size">1 Kilo</span><span class="wt-price">RM 20</span></button>
+                <button class="wt-btn" onclick="setWeight('s1','2 Kilo',40,this);event.stopPropagation()"><span class="wt-size">2 Kilo</span><span class="wt-price">RM 40</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sauce-card" id="sc2">
+            <div class="sauce-top" onclick="toggleSauce('sc2','s2')">
+              <div class="sauce-icon">🔥</div>
+              <div class="sauce-info"><div class="sauce-name">Smoky BBQ Glaze</div><div class="sauce-desc">Rich, bold &amp; smoky</div></div>
+              <div class="sauce-chk">✓</div>
+            </div>
+            <div class="sauce-options">
+              <div class="opt-label">Heat Level</div>
+              <div class="heat-toggle">
+                <button class="heat-btn orig active" onclick="setHeat('s2','Original',this);event.stopPropagation()">🥗 Original</button>
+                <button class="heat-btn spicy" onclick="setHeat('s2','Spicy',this);event.stopPropagation()">🌶️ Spicy</button>
+              </div>
+              <div class="opt-label">Portion &amp; Price</div>
+              <div class="weight-grid">
+                <button class="wt-btn" onclick="setWeight('s2','250g',7,this);event.stopPropagation()"><span class="wt-size">250g</span><span class="wt-price">RM 7</span></button>
+                <button class="wt-btn" onclick="setWeight('s2','500g',12,this);event.stopPropagation()"><span class="wt-size">500g</span><span class="wt-price">RM 12</span></button>
+                <button class="wt-btn" onclick="setWeight('s2','1 Kilo',20,this);event.stopPropagation()"><span class="wt-size">1 Kilo</span><span class="wt-price">RM 20</span></button>
+                <button class="wt-btn" onclick="setWeight('s2','2 Kilo',40,this);event.stopPropagation()"><span class="wt-size">2 Kilo</span><span class="wt-price">RM 40</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sauce-card" id="sc3">
+            <div class="sauce-top" onclick="toggleSauce('sc3','s3')">
+              <div class="sauce-icon">🌿</div>
+              <div class="sauce-info"><div class="sauce-name">Wild Herb Infusion</div><div class="sauce-desc">Fresh, earthy &amp; aromatic</div></div>
+              <div class="sauce-chk">✓</div>
+            </div>
+            <div class="sauce-options">
+              <div class="opt-label">Heat Level</div>
+              <div class="heat-toggle">
+                <button class="heat-btn orig active" onclick="setHeat('s3','Original',this);event.stopPropagation()">🥗 Original</button>
+                <button class="heat-btn spicy" onclick="setHeat('s3','Spicy',this);event.stopPropagation()">🌶️ Spicy</button>
+              </div>
+              <div class="opt-label">Portion &amp; Price</div>
+              <div class="weight-grid">
+                <button class="wt-btn" onclick="setWeight('s3','250g',7,this);event.stopPropagation()"><span class="wt-size">250g</span><span class="wt-price">RM 7</span></button>
+                <button class="wt-btn" onclick="setWeight('s3','500g',12,this);event.stopPropagation()"><span class="wt-size">500g</span><span class="wt-price">RM 12</span></button>
+                <button class="wt-btn" onclick="setWeight('s3','1 Kilo',20,this);event.stopPropagation()"><span class="wt-size">1 Kilo</span><span class="wt-price">RM 20</span></button>
+                <button class="wt-btn" onclick="setWeight('s3','2 Kilo',40,this);event.stopPropagation()"><span class="wt-size">2 Kilo</span><span class="wt-price">RM 40</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sauce-card" id="sc4">
+            <div class="sauce-top" onclick="toggleSauce('sc4','s4')">
+              <div class="sauce-icon">🌮</div>
+              <div class="sauce-info"><div class="sauce-name">Spicy Mexican Salsa</div><div class="sauce-desc">Fiery, vibrant &amp; zesty</div></div>
+              <div class="sauce-chk">✓</div>
+            </div>
+            <div class="sauce-options">
+              <div class="opt-label">Heat Level</div>
+              <div class="heat-toggle">
+                <button class="heat-btn orig active" onclick="setHeat('s4','Original',this);event.stopPropagation()">🥗 Original</button>
+                <button class="heat-btn spicy" onclick="setHeat('s4','Spicy',this);event.stopPropagation()">🌶️ Spicy</button>
+              </div>
+              <div class="opt-label">Portion &amp; Price</div>
+              <div class="weight-grid">
+                <button class="wt-btn" onclick="setWeight('s4','250g',7,this);event.stopPropagation()"><span class="wt-size">250g</span><span class="wt-price">RM 7</span></button>
+                <button class="wt-btn" onclick="setWeight('s4','500g',12,this);event.stopPropagation()"><span class="wt-size">500g</span><span class="wt-price">RM 12</span></button>
+                <button class="wt-btn" onclick="setWeight('s4','1 Kilo',20,this);event.stopPropagation()"><span class="wt-size">1 Kilo</span><span class="wt-price">RM 20</span></button>
+                <button class="wt-btn" onclick="setWeight('s4','2 Kilo',40,this);event.stopPropagation()"><span class="wt-size">2 Kilo</span><span class="wt-price">RM 40</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sauce-card" id="sc5">
+            <div class="sauce-top" onclick="toggleSauce('sc5','s5')">
+              <div class="sauce-icon">🫒</div>
+              <div class="sauce-info"><div class="sauce-name">Classic Italian Herbs</div><div class="sauce-desc">Timeless, fragrant &amp; herby</div></div>
+              <div class="sauce-chk">✓</div>
+            </div>
+            <div class="sauce-options">
+              <div class="opt-label">Heat Level</div>
+              <div class="heat-toggle">
+                <button class="heat-btn orig active" onclick="setHeat('s5','Original',this);event.stopPropagation()">🥗 Original</button>
+                <button class="heat-btn spicy" onclick="setHeat('s5','Spicy',this);event.stopPropagation()">🌶️ Spicy</button>
+              </div>
+              <div class="opt-label">Portion &amp; Price</div>
+              <div class="weight-grid">
+                <button class="wt-btn" onclick="setWeight('s5','250g',7,this);event.stopPropagation()"><span class="wt-size">250g</span><span class="wt-price">RM 7</span></button>
+                <button class="wt-btn" onclick="setWeight('s5','500g',12,this);event.stopPropagation()"><span class="wt-size">500g</span><span class="wt-price">RM 12</span></button>
+                <button class="wt-btn" onclick="setWeight('s5','1 Kilo',20,this);event.stopPropagation()"><span class="wt-size">1 Kilo</span><span class="wt-price">RM 20</span></button>
+                <button class="wt-btn" onclick="setWeight('s5','2 Kilo',40,this);event.stopPropagation()"><span class="wt-size">2 Kilo</span><span class="wt-price">RM 40</span></button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. LOCATION -->
+  <div class="step">
+    <div class="step-card">
+      <div class="step-head">
+        <div class="step-num">4</div>
+        <div><div class="step-title">Delivery Location</div><div class="step-desc">Delivery fee included in total</div></div>
+      </div>
+      <div class="step-body">
+        <div class="loc-grid">
+          <div class="loc-tile"><input type="radio" name="loc" id="l1" value="UTM" data-fee="2" onchange="handleLoc(this)"/><label class="loc-lbl" for="l1"><span class="loc-dot"></span><span class="loc-name">🎓 UTM</span><span class="loc-fee">+RM 2</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l2" value="Garden Residence" data-fee="4" onchange="handleLoc(this)"/><label class="loc-lbl" for="l2"><span class="loc-dot"></span><span class="loc-name">🌿 Garden Residence</span><span class="loc-fee">+RM 4</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l3" value="Desa" data-fee="3" onchange="handleLoc(this)"/><label class="loc-lbl" for="l3"><span class="loc-dot"></span><span class="loc-name">🏘 Desa</span><span class="loc-fee">+RM 3</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l4" value="Melana" data-fee="3" onchange="handleLoc(this)"/><label class="loc-lbl" for="l4"><span class="loc-dot"></span><span class="loc-name">🏠 Melana</span><span class="loc-fee">+RM 3</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l5" value="Melawis" data-fee="3" onchange="handleLoc(this)"/><label class="loc-lbl" for="l5"><span class="loc-dot"></span><span class="loc-name">🏠 Melawis</span><span class="loc-fee">+RM 3</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l6" value="D'Summit" data-fee="5" onchange="handleLoc(this)"/><label class="loc-lbl" for="l6"><span class="loc-dot"></span><span class="loc-name">🏢 D'Summit</span><span class="loc-fee">+RM 5</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l7" value="D'Secret Garden" data-fee="5" onchange="handleLoc(this)"/><label class="loc-lbl" for="l7"><span class="loc-dot"></span><span class="loc-name">🌺 D'Secret Garden</span><span class="loc-fee">+RM 5</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l8" value="Pulai Springs" data-fee="4" onchange="handleLoc(this)"/><label class="loc-lbl" for="l8"><span class="loc-dot"></span><span class="loc-name">💧 Pulai Springs</span><span class="loc-fee">+RM 4</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l10" value="Greenfield" data-fee="5" onchange="handleLoc(this)"/><label class="loc-lbl" for="l10"><span class="loc-dot"></span><span class="loc-name">🏡 Greenfield</span><span class="loc-fee">+RM 5</span></label></div>
+          <div class="loc-tile"><input type="radio" name="loc" id="l9" value="Others" data-fee="0" onchange="handleLoc(this)"/><label class="loc-lbl" for="l9"><span class="loc-dot"></span><span class="loc-name">📝 Others</span><span class="loc-fee" style="color:var(--muted);">TBD</span></label></div>
+        </div>
+        <div class="loc-detail" id="det-utm"><input type="text" id="utm-spot" placeholder="Where exactly in UTM? (Block, Cafe, Gate...)"/></div>
+        <div class="loc-detail" id="det-others"><input type="text" id="other-loc" placeholder="Enter your full location..."/></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. NOTES -->
+  <div class="step">
+    <div class="step-card">
+      <div class="step-head">
+        <div class="step-num">5</div>
+        <div><div class="step-title">Special Notes</div><div class="step-desc">Anything extra we should know?</div></div>
+      </div>
+      <div class="step-body">
+        <div class="field">
+          <textarea id="notes" rows="3" placeholder="e.g. Extra sauce, allergy info, specific time..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SUMMARY -->
+  <div class="step">
+    <div class="summary-card">
+      <div class="sum-label">Review</div>
+      <div class="sum-title">Your Order</div>
+      <div class="sum-lines" id="sumlines">
+        <span class="sum-empty">Select items above to see your order here ↑</span>
+      </div>
+    </div>
+    <a class="wa-btn" href="#" onclick="doWA(event)">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Send Order via WhatsApp
+    </a>
+    <p class="foot-note">You'll be redirected to WhatsApp with your order ready to send.<br/><strong>Pure Bottle</strong> · Healthy Life · Johor Bahru</p>
+  </div>
+
+</div>
+
+<script>
+function toggleReviews(){
+  const sec=document.getElementById('reviews-section');
+  const btn=document.getElementById('rev-btn');
+  const isHidden=sec.style.display==='none';
+  sec.style.display=isHidden?'block':'none';
+  btn.textContent=isHidden?'✕ Close':'★ Reviews';
+  if(isHidden) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Sauce state
+const SD = {
+  s1:{name:'🍯 Honey Mustard Vinaigrette', heat:'Original', weight:null, price:0},
+  s2:{name:'🔥 Smoky BBQ Glaze',           heat:'Original', weight:null, price:0},
+  s3:{name:'🌿 Wild Herb Infusion',         heat:'Original', weight:null, price:0},
+  s4:{name:'🌮 Spicy Mexican Salsa',        heat:'Original', weight:null, price:0},
+  s5:{name:'🫒 Classic Italian Herbs',      heat:'Original', weight:null, price:0},
+};
+const sauceSelected = {s1:false,s2:false,s3:false,s4:false,s5:false};
+
+function toggleSauce(cardId, sid){
+  sauceSelected[sid] = !sauceSelected[sid];
+  const card = document.getElementById(cardId);
+  card.classList.toggle('selected', sauceSelected[sid]);
+  if(!sauceSelected[sid]){ SD[sid].weight=null; SD[sid].price=0; }
+  sync();
+}
+
+function setHeat(sid, val, btn){
+  SD[sid].heat = val;
+  btn.closest('.heat-toggle').querySelectorAll('.heat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  sync();
+}
+
+function setWeight(sid, wt, price, btn){
+  SD[sid].weight = wt;
+  SD[sid].price  = price;
+  btn.closest('.weight-grid').querySelectorAll('.wt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  sync();
+}
+
+// Juice helpers
+function toggleQty(cb,id){ document.getElementById(id).classList.toggle('on',cb.checked); sync(); }
+function toggleExp(cb,id){ document.getElementById(id).classList.toggle('on',cb.checked); }
+function chQty(id,d){ const el=document.getElementById(id); let v=parseInt(el.textContent)+d; if(v<1)v=1; el.textContent=v; sync(); }
+function handleLoc(r){
+  document.getElementById('det-utm').classList.toggle('on',r.value==='UTM');
+  document.getElementById('det-others').classList.toggle('on',r.value==='Others');
+  sync();
+}
+function getDeliveryFee(){
+  const locEl=document.querySelector('input[name="loc"]:checked');
+  return locEl ? parseInt(locEl.dataset.fee||0) : 0;
+}
+
+const JUICES=[
+  {cb:'j1',qty:'nj1',label:'🍊 Orange Juice',price:8,custom:null},
+  {cb:'j2',qty:'nj2',label:'🍏 Apple Juice', price:8,custom:null},
+  {cb:'j3',qty:'nj3',label:'🍹 Mix Juice',   price:8,custom:null},
+  {cb:'j4',qty:'nj4',label:'✏️ Custom Blend',price:8,custom:'txtj4'},
+];
+
+function sync(){
+  const sl = document.getElementById('sumlines');
+  let html='', total=0, hasItem=false;
+
+  JUICES.forEach(it=>{
+    const cb=document.getElementById(it.cb);
+    if(cb&&cb.checked){
+      hasItem=true;
+      const qty=parseInt(document.getElementById(it.qty)?.textContent||'1');
+      total+=qty*it.price;
+      html+=`<span class="sum-item">• ${it.label} × ${qty} — RM ${qty*it.price}</span>`;
+      if(it.custom){const t=document.getElementById(it.custom)?.value||'';if(t)html+=`<span class="sum-sub">↳ ${t}</span>`;}
+    }
+  });
+
+  Object.entries(SD).forEach(([id,d])=>{
+    if(!sauceSelected[id]) return;
+    hasItem=true;
+    total+=d.price;
+    const wt=d.weight?`${d.weight} — RM ${d.price}`:'⚠️ Choose a portion size';
+    html+=`<span class="sum-item">• 🍗 ${d.name}</span>`;
+    html+=`<span class="sum-sub">↳ ${d.heat} · ${wt}</span>`;
+  });
+
+  const locEl=document.querySelector('input[name="loc"]:checked');
+  if(locEl){
+    let ls=locEl.value;
+    if(ls==='UTM'){const s=document.getElementById('utm-spot')?.value.trim();ls='UTM'+(s?` — ${s}`:'');}
+    else if(ls==='Others'){ls=document.getElementById('other-loc')?.value.trim()||'Others';}
+    const fee=parseInt(locEl.dataset.fee||0);
+    const feeStr=ls==='Others'?'TBD':`RM ${fee}`;
+    html+=`<span class="sum-loc">📍 Delivery: ${ls} &nbsp;·&nbsp; 🛵 Fee: ${feeStr}</span>`;
+    if(ls!=='Others') total+=fee;
+  }
+
+  if(hasItem) html+=`<span class="sum-total">💰 Total: RM ${total}</span>`;
+  sl.innerHTML=html||'<span class="sum-empty">Select items above to see your order here ↑</span>';
+}
+
+document.addEventListener('input',sync);
+
+function doWA(e){
+  e.preventDefault();
+  const name=document.getElementById('cname').value.trim()||'—';
+  const notes=document.getElementById('notes').value.trim();
+  let chosen=false,total=0,chickOk=true;
+  let msg=`🌿 *PURE BOTTLE — NEW ORDER*\n━━━━━━━━━━━━━━━━━\n👤 *Name:* ${name}\n━━━━━━━━━━━━━━━━━\n🛒 *ORDER:*\n`;
+
+  JUICES.forEach(it=>{
+    const cb=document.getElementById(it.cb);
+    if(cb&&cb.checked){
+      chosen=true;
+      const qty=parseInt(document.getElementById(it.qty)?.textContent||'1');
+      total+=qty*it.price;
+      msg+=`• ${it.label} × ${qty} — RM ${qty*it.price}\n`;
+      if(it.custom){const t=document.getElementById(it.custom)?.value||'';if(t)msg+=`  ↳ ${t}\n`;}
+    }
+  });
+
+  Object.entries(SD).forEach(([id,d])=>{
+    if(!sauceSelected[id]) return;
+    chosen=true;
+    if(!d.weight){chickOk=false;return;}
+    total+=d.price;
+    msg+=`• 🍗 ${d.name}\n  ↳ ${d.heat} · ${d.weight} — RM ${d.price}\n`;
+  });
+
+  if(!chosen){alert('Please select at least one item!');return;}
+  if(!chickOk){alert('Please select a portion size for all your chicken items!');return;}
+  const locEl=document.querySelector('input[name="loc"]:checked');
+  if(!locEl){alert('Please select your delivery location!');return;}
+  let ls=locEl.value;
+  if(ls==='UTM'){const s=document.getElementById('utm-spot')?.value.trim();ls='UTM'+(s?` — ${s}`:'');}
+  else if(ls==='Others'){ls=document.getElementById('other-loc')?.value.trim()||'Others';}
+  const fee=parseInt(locEl.dataset.fee||0);
+  const feeStr=ls==='Others'?'TBD':`RM ${fee}`;
+  if(ls!=='Others') total+=fee;
+  msg+=`━━━━━━━━━━━━━━━━━\n📍 *Location:* ${ls}\n🛵 *Delivery Fee:* ${feeStr}\n`;
+  if(notes)msg+=`📝 *Notes:* ${notes}\n`;
+  msg+=`━━━━━━━━━━━━━━━━━\n💰 *Total: RM ${total}*\n_Sent via Pure Bottle Order Page_ 🙏`;
+  window.open(`https://wa.me/60189037593?text=${encodeURIComponent(msg)}`,'_blank');
+}
+</script>
+</body>
+</html>
